@@ -6,7 +6,7 @@ module.exports = {
   presets: [require('../../tailwind-workspace-preset.js')],
   mode: 'jit',
   content: [
-    join(__dirname, 'src/apps/whiteboard/**/*.{js,ts,jsx,tsx}'),
+    join(__dirname, 'src/**/*.{js,ts,jsx,tsx}'),
     ...createGlobPatternsForDependencies(__dirname),
   ],
   darkMode: 'media',

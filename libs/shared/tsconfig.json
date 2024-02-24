@@ -8,6 +8,11 @@
   },
   "files": [],
   "include": [],
+  "paths": {
+    "@shadcn/components": "src/lib/components",
+    "@shadcn/components/*": "src/lib/components/*",
+    "@shadcn/utils": "src/lib/shadcn-utils"
+  },
   "references": [
     {
       "path": "./tsconfig.lib.json"

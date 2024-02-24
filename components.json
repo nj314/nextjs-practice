@@ -6,10 +6,10 @@
     "config": "apps/**/tailwind.config.js",
     "css": "apps/**/app/global.css",
     "baseColor": "stone",
-    "cssVariables": true
+    "cssVariables": false
   },
   "aliases": {
-    "components": "libs/shared/src/components",
-    "utils": "libs/shared/src/lib/shadcn-utils"
+    "components": "@shared/components",
+    "utils": "@shared/utils"
   }
 }

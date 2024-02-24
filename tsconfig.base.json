@@ -15,8 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@shared": ["libs/shared/src/index.ts"],
+      "@shared/*": ["libs/shared/src/lib/*"],
       "@nextjs-practice/shared": ["libs/shared/src/index.ts"],
-      "@nextjs-practice/shared/*": ["libs/shared/src/*"],
+      "@nextjs-practice/shared/*": ["libs/shared/src/lib/*"],
       "@nextjs-practice/whiteboard-home": ["libs/whiteboard/home/src/index.ts"],
       "@nextjs-practice/whiteboard-home/server": [
         "libs/whiteboard/home/src/server.ts"
