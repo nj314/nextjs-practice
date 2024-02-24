@@ -16,16 +16,25 @@
         "name": "next"
       }
     ],
-    "types": ["jest", "node"]
+    "types": [
+      "jest",
+      "node"
+    ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "../../apps/whiteboard-app/.next/types/**/*.ts",
-    "../../dist/apps/whiteboard-app/.next/types/**/*.ts",
-    "next-env.d.ts"
+    "../../apps/whiteboard/.next/types/**/*.ts",
+    "../../dist/apps/whiteboard/.next/types/**/*.ts",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

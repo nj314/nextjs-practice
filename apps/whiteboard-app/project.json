@@ -1,8 +1,0 @@
-{
-  "name": "whiteboard-app",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/whiteboard-app",
-  "projectType": "application",
-  "targets": {},
-  "tags": []
-}
