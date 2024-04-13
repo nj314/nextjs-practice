@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@shared/components/theme';
 import { ConvexClientProvider } from '../providers/convex-client-provider';
 
 import './global.css';
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ConvexClientProvider>{children}</ConvexClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

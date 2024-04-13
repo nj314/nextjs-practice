@@ -1,3 +1,5 @@
+'use client';
+
 import { List } from './list';
 import { NewButton } from './new-button';
 

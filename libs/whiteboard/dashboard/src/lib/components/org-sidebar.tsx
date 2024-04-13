@@ -16,8 +16,9 @@ const font = Poppins({
 export function OrgSidebar() {
   const searchParams = useSearchParams();
   const favorites = searchParams.get('favorites');
+
   return (
-    <div className="hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5">
+    <div className="hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5 text-red border-gray-">
       <Link href="/">
         <div className="flex items-center gap-x-2">
           <Image alt="logo" src="/logo-sm.png" height={60} width={60} />
@@ -30,20 +31,9 @@ export function OrgSidebar() {
         hidePersonal
         appearance={{
           elements: {
-            rootBox: {
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%',
-            },
-            organizationSwitcherTrigger: {
-              padding: '6px',
-              width: '100%',
-              borderRadius: '8px',
-              border: '1px solid #E5E7EB',
-              justifyContent: 'space-between',
-              backgorundColor: 'white',
-            },
+            rootBox: 'flex justify-center items-center w-full',
+            organizationSwitcherTrigger:
+              'p-1.5 w-full rounded-lg border border-solid border-gray-300 dark:border-gray-700 justify-between dark:text-white',
           },
         }}
       />
