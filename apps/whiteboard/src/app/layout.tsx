@@ -1,3 +1,5 @@
+import { ConvexClientProvider } from '../providers/convex-client-provider';
+
 import './global.css';
 
 export const metadata = {
@@ -12,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ConvexClientProvider>{children}</ConvexClientProvider>
+      </body>
     </html>
   );
 }

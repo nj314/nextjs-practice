@@ -1,10 +1,16 @@
-import { WhiteboardHome } from '@nextjs-practice/whiteboard-home';
+'use client';
 
-export default async function Index() {
+import { UserButton } from '@clerk/nextjs';
+
+export default function Index() {
   return (
-    <>
-      <div className="border-4 border-red-500">Hi there</div>
-      <WhiteboardHome />
-    </>
+    <div className="flex flex-col gap-2 items-start">
+      {/* <Authenticated>Logged in</Authenticated>
+      <Unauthenticated>Logged out</Unauthenticated>
+      <AuthLoading>Still loading</AuthLoading> */}
+
+      <div>This screen is for authenticated users only</div>
+      <UserButton />
+    </div>
   );
 }
