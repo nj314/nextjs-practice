@@ -15,14 +15,16 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shared": ["libs/shared/src/index.ts"],
-      "@shared/*": ["libs/shared/src/lib/*"],
       "@nextjs-practice/shared": ["libs/shared/src/index.ts"],
       "@nextjs-practice/shared/*": ["libs/shared/src/lib/*"],
-      "@nextjs-practice/whiteboard-home": ["libs/whiteboard/home/src/index.ts"],
+      "@nextjs-practice/whiteboard-dashboard": [
+        "libs/whiteboard/dashboard/src/index.ts"
+      ],
       "@nextjs-practice/whiteboard-home/server": [
         "libs/whiteboard/home/src/server.ts"
-      ]
+      ],
+      "@shared": ["libs/shared/src/index.ts"],
+      "@shared/*": ["libs/shared/src/lib/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

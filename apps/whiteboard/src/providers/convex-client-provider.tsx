@@ -1,9 +1,9 @@
 'use client';
 
 import { ClerkProvider, useAuth } from '@clerk/nextjs';
+import { Loading } from '@nextjs-practice/shared';
 import { AuthLoading, Authenticated, ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
-import { Loading } from '../components/auth/loading';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;

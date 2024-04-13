@@ -1,6 +1,7 @@
 'use client';
 
 import { useOrganization, useOrganizationList } from '@clerk/nextjs';
+import { Hint } from '@nextjs-practice/shared';
 import { cn } from '@shared/utils';
 import Image from 'next/image';
 
@@ -22,16 +23,18 @@ export function Item({ id, name, imageUrl }: Props) {
 
   return (
     <div className="aspect-square relative">
-      <Image
-        alt={name}
-        src={imageUrl}
-        fill
-        onClick={handleClick}
-        className={cn(
-          'rounded-md cursor-pointer opacity-75 hover:opacity-100 transition',
-          isActive && 'opacity-100'
-        )}
-      />
+      <Hint label={name} side="right" sideOffset={18} align="start">
+        <Image
+          alt={name}
+          src={imageUrl}
+          fill
+          onClick={handleClick}
+          className={cn(
+            'rounded-md cursor-pointer opacity-75 hover:opacity-100 transition',
+            isActive && 'opacity-100'
+          )}
+        />
+      </Hint>
     </div>
   );
 }

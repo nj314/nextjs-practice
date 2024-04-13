@@ -1,7 +1,7 @@
 {
-  "name": "whiteboard-home",
+  "name": "whiteboard-dashboard",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/whiteboard/home/src",
+  "sourceRoot": "libs/whiteboard/dashboard/src",
   "projectType": "library",
   "tags": [],
   "targets": {}
