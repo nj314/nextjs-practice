@@ -6,5 +6,6 @@ export * from './dropdown-menu';
 export * from './hint';
 export * from './input';
 export * from './loading';
+export * from './skeleton';
 export * from './sonner';
 export * from './tooltip';

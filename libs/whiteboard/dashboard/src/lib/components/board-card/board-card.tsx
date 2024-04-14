@@ -1,5 +1,8 @@
 import { useAuth } from '@clerk/nextjs';
+import { Actions } from '@shared/components/actions';
+import { Skeleton } from '@shared/components/ui';
 import { formatDistanceToNow } from 'date-fns';
+import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { Footer } from './footer';
 import { Overlay } from './overlay';
@@ -24,7 +27,6 @@ export function BoardCard({
   createdAt,
   orgId,
   isFavorite,
-  ...rest
 }: Props) {
   const { userId } = useAuth();
   const authorLabel = userId === authorId ? 'You' : authorName;
@@ -40,6 +42,11 @@ export function BoardCard({
             src="https://images.ctfassets.net/w6r2i5d8q73s/FmpmX20UUvUKyweJ6lgNE/175e3b929ac8f7b98efc81be015efd78/homepage_project_management_02_miro_cards_product_image_EN_1210x680_2x.png"
           />
           <Overlay />
+          <Actions id={id} title={title} side="right">
+            <button className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity px-3 py-2 outline-none">
+              <MoreHorizontal className="text-white opacity-75 hover:opacity-100 transition-opacity" />
+            </button>
+          </Actions>
         </div>
         <Footer
           isFavorite={isFavorite}
@@ -53,3 +60,11 @@ export function BoardCard({
     </Link>
   );
 }
+
+BoardCard.Skeleton = function BoardCardSkeleton() {
+  return (
+    <div className="aspect-[100/127] rounded-lg overflow-hidden">
+      <Skeleton className="h-full w-full" />
+    </div>
+  );
+};
