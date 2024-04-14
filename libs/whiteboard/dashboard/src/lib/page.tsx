@@ -4,8 +4,11 @@ import { BoardList } from './components/board-list';
 import { EmptyOrg } from './components/empty-org';
 
 type Props = {
+  /**
+   * Search params are always strings!
+   */
   searchParams: {
-    favorites?: boolean;
+    favorites?: string;
     search?: string;
   };
 };
@@ -18,7 +21,13 @@ export const DashboardPage: NextPage<Props> = ({ searchParams }) => {
       {!organization ? (
         <EmptyOrg />
       ) : (
-        <BoardList orgId={organization.id} query={searchParams} />
+        <BoardList
+          orgId={organization.id}
+          query={{
+            favorites: searchParams.favorites === 'true',
+            search: searchParams.search,
+          }}
+        />
       )}
     </div>
   );

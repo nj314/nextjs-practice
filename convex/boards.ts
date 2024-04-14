@@ -5,6 +5,7 @@ export const get = query({
   args: {
     orgId: v.string(),
     search: v.optional(v.string()),
+    favorites: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -42,15 +43,10 @@ export const get = query({
       isFavorite: userFavoriteBoards.some((f) => f.boardId === b._id),
     }));
 
-    //     const boardsWithfavoriteRelation = boards.map((board) => {
-    // const isFavorite = await ctx.db
-    //         .query('userFavorites')
-    //         .withIndex('by_user_board', (q) =>
-    //           q.eq('userId', identity.subject).eq('boardId', board._id)
-    //         )
-    //         .unique()
+    if (args.favorites) {
+      return boardsWithFavorites.filter((b) => b.isFavorite);
+    }
 
-    // });
     return boardsWithFavorites;
   },
 });
