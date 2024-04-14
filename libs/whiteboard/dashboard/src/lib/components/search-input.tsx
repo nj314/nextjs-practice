@@ -1,6 +1,6 @@
 'use client';
 
-import { Input } from '@shared';
+import { Input } from '@shared/components/ui';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import qs from 'query-string';

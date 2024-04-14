@@ -1,14 +1,25 @@
-'use client';
+import { useOrganization } from '@clerk/nextjs';
+import { NextPage } from 'next';
+import { BoardList } from './components/board-list';
+import { EmptyOrg } from './components/empty-org';
 
-export function DashboardPage() {
+type Props = {
+  searchParams: {
+    favorites?: boolean;
+    search?: string;
+  };
+};
+
+export const DashboardPage: NextPage<Props> = ({ searchParams }) => {
+  const { organization } = useOrganization();
+
   return (
-    <div className="flex flex-col gap-2 items-start">
-      <h1> Dashboard root page</h1>
-      {/* <Authenticated>Logged in</Authenticated>
-      <Unauthenticated>Logged out</Unauthenticated>
-      <AuthLoading>Still loading</AuthLoading> */}
-
-      <div>This screen is for authenticated users only</div>
+    <div className="flex-1 h-[calc(100%-80px)] p-6">
+      {!organization ? (
+        <EmptyOrg />
+      ) : (
+        <BoardList orgId={organization.id} query={searchParams} />
+      )}
     </div>
   );
-}
+};

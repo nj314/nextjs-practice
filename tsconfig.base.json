@@ -15,8 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@nextjs-practice/shared": ["libs/shared/src/index.ts"],
-      "@nextjs-practice/shared/*": ["libs/shared/src/lib/*"],
       "@nextjs-practice/whiteboard-dashboard": [
         "libs/whiteboard/dashboard/src/index.ts"
       ],

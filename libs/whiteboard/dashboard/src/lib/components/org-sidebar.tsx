@@ -1,7 +1,7 @@
 'use client';
 import { OrganizationSwitcher } from '@clerk/nextjs';
-import { Button } from '@nextjs-practice/shared';
-import { cn } from '@nextjs-practice/shared/utils';
+import { Button } from '@shared/components/ui';
+import { cn } from '@shared/utils';
 import { LayoutDashboard, Star } from 'lucide-react';
 import { Poppins } from 'next/font/google';
 import Image from 'next/image';

@@ -1,8 +1,12 @@
 'use client';
 
 import { CreateOrganization } from '@clerk/nextjs';
-import { Hint } from '@nextjs-practice/shared';
-import { Dialog, DialogContent, DialogTrigger } from '@shared/components/ui';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  Hint,
+} from '@shared/components/ui';
 import { Plus } from 'lucide-react';
 
 export function NewButton() {

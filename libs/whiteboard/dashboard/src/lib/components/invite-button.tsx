@@ -4,7 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
-} from '@nextjs-practice/shared';
+} from '@shared/components/ui';
 import { Plus } from 'lucide-react';
 
 export function InviteButton() {

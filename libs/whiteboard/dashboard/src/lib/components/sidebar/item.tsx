@@ -1,7 +1,7 @@
 'use client';
 
 import { useOrganization, useOrganizationList } from '@clerk/nextjs';
-import { Hint } from '@nextjs-practice/shared';
+import { Hint } from '@shared/components/ui';
 import { cn } from '@shared/utils';
 import Image from 'next/image';
 
