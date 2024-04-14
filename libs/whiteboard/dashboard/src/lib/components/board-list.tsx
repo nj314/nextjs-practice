@@ -1,6 +1,13 @@
 'use client';
 
+import { useOrganization } from '@clerk/nextjs';
+import { api } from '@convex/api';
 import { Button } from '@shared/components/ui';
+import { useApiMutation } from '@shared/utils';
+import { useQuery } from 'convex/react';
+import { toast } from 'sonner';
+import { BoardCard } from './board-card';
+import { NewBoardButton } from './new-board-button';
 
 type ResultsMessageProps = {
   children?: React.ReactNode;
@@ -17,12 +24,36 @@ function ResultsMessage({ children, title, subtitle }: ResultsMessageProps) {
   );
 }
 
+function EmptyList() {
+  const { organization } = useOrganization();
+  const { mutate: createBoard, pending } = useApiMutation(api.board.create);
+
+  const handleCreate = async () => {
+    if (!organization) return;
+    await createBoard({
+      orgId: organization.id,
+      title: 'Untitled',
+    });
+    toast.success('Board created');
+    // TODO: redirect to /boards/:boardId
+  };
+  return (
+    <ResultsMessage title="No boards" subtitle="Create your first board">
+      <Button size="lg" className="" onClick={handleCreate}>
+        Create board
+      </Button>
+    </ResultsMessage>
+  );
+}
+
 type Props = {
   orgId: string;
   query?: { favorites?: boolean; search?: string };
 };
 export function BoardList({ orgId, query }: Props) {
-  const data = []; // TODO
+  const data = useQuery(api.boards.get, { orgId });
+
+  if (!data) return <div>Loading...</div>;
 
   if (!data.length && query?.search) {
     return (
@@ -43,18 +74,30 @@ export function BoardList({ orgId, query }: Props) {
   }
 
   if (!data.length) {
-    return (
-      <ResultsMessage title="No boards" subtitle="Create your first board">
-        <Button size="lg" className="">
-          Create board
-        </Button>
-      </ResultsMessage>
-    );
+    return <EmptyList />;
   }
 
   return (
     <div>
-      Board list <code>{JSON.stringify(query)}</code>
+      <h2 className="text-3xl">
+        {query?.favorites ? 'Favorite boards' : 'Team boards'}
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 mt-8 pb-10">
+        <NewBoardButton orgId={orgId} />
+        {data.map((board) => (
+          <BoardCard
+            key={board._id}
+            id={board._id}
+            title={board.title}
+            imageUrl={board.imageUrl}
+            authorId={board.authorId}
+            authorName={board.authorName}
+            createdAt={board._creationTime}
+            orgId={orgId}
+            isFavorite={false} // TODO
+          />
+        ))}
+      </div>
     </div>
   );
 }

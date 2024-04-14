@@ -1,8 +1,12 @@
-import { TooltipContentProps, TooltipTrigger } from '@radix-ui/react-tooltip';
 import { cn } from '@shared/utils';
-import { Tooltip, TooltipContent, TooltipProvider } from './tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
 
-type Props = TooltipContentProps & {
+type Props = React.ComponentProps<typeof TooltipContent> & {
   label: string;
 };
 
