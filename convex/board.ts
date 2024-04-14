@@ -31,3 +31,23 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const update = mutation({
+  args: { id: v.id('boards'), title: v.string() },
+  handler: async (ctx, args) => {
+    // TODO auth here
+    const TITLE_MAX_LENGTH = 60;
+    const title = args.title.trim();
+    if (!title) throw new Error('Title is required');
+    if (title.length > TITLE_MAX_LENGTH)
+      throw new Error(
+        `Title cannot be more than ${TITLE_MAX_LENGTH} characters`
+      );
+
+    const board = await ctx.db.patch(args.id, {
+      title: args.title,
+    });
+
+    return board;
+  },
+});

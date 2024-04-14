@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './ui';
+} from '../ui';
 
 type Props = React.PropsWithChildren<{
   onConfirm: () => void;

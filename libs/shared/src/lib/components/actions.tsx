@@ -3,15 +3,17 @@
 import { api } from '@convex/api';
 import { Id } from '@convex/dataModel';
 import { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
+import { useRenameModal } from '@shared/store';
 import { useApiMutation } from '@shared/utils';
-import { Link2, Trash2 } from 'lucide-react';
+import { Link2, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { ConfirmModal } from './confirm-modal';
+import { ConfirmModal } from './modals';
 import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui';
 
@@ -41,6 +43,8 @@ export function Actions({ children, side, sideOffset, id, title }: Props) {
     }
   };
 
+  const { onOpen } = useRenameModal();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -57,6 +61,17 @@ export function Actions({ children, side, sideOffset, id, title }: Props) {
           <Link2 className="h-4 w-4 mr-2" />
           Copy board link
         </DropdownMenuItem>
+
+        <DropdownMenuItem
+          className="p-3 cursor-pointer"
+          onClick={() => onOpen(id, title)}
+        >
+          <Pencil className="h-4 w-4 mr-2" />
+          Rename
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
         <ConfirmModal
           header="Delete board?"
           description="This will permanently delete the board and all of its contents."
