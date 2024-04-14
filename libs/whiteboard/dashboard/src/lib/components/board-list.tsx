@@ -5,6 +5,7 @@ import { api } from '@convex/api';
 import { Button } from '@shared/components/ui';
 import { useApiMutation } from '@shared/utils';
 import { useQuery } from 'convex/react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { BoardCard } from './board-card';
 import { NewBoardButton } from './new-board-button';
@@ -25,21 +26,22 @@ function ResultsMessage({ children, title, subtitle }: ResultsMessageProps) {
 }
 
 function EmptyList() {
+  const router = useRouter();
   const { organization } = useOrganization();
   const { mutate: createBoard, pending } = useApiMutation(api.board.create);
 
   const handleCreate = async () => {
     if (!organization) return;
-    await createBoard({
+    const id = await createBoard({
       orgId: organization.id,
       title: 'Untitled',
     });
     toast.success('Board created');
-    // TODO: redirect to /boards/:boardId
+    router.push(`/board/${id}`);
   };
   return (
     <ResultsMessage title="No boards" subtitle="Create your first board">
-      <Button size="lg" className="" onClick={handleCreate}>
+      <Button disabled={pending} size="lg" onClick={handleCreate}>
         Create board
       </Button>
     </ResultsMessage>
@@ -88,7 +90,7 @@ export function BoardList({ orgId, query }: Props) {
     return (
       <ResultsMessage
         title="No favorite boards"
-        subtitle="Try favoritng a board"
+        subtitle="Try favoriting a board"
       />
     );
   }

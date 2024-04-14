@@ -15,6 +15,13 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@convex/*": ["convex/_generated/*"],
+      "@nextjs-practice/whiteboard-canvas": [
+        "libs/whiteboard/canvas/src/index.ts"
+      ],
+      "@nextjs-practice/whiteboard-canvas/server": [
+        "libs/whiteboard/canvas/src/server.ts"
+      ],
       "@nextjs-practice/whiteboard-dashboard": [
         "libs/whiteboard/dashboard/src/index.ts"
       ],
@@ -22,8 +29,7 @@
         "libs/whiteboard/home/src/server.ts"
       ],
       "@shared": ["libs/shared/src/index.ts"],
-      "@shared/*": ["libs/shared/src/lib/*"],
-      "@convex/*": ["convex/_generated/*"]
+      "@shared/*": ["libs/shared/src/lib/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

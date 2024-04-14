@@ -1,0 +1,8 @@
+{
+  "name": "whiteboard-canvas",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/whiteboard/canvas/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}
