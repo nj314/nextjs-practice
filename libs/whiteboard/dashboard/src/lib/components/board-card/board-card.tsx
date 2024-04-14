@@ -80,7 +80,7 @@ export function BoardCard({
           authorLabel={authorLabel}
           createdAtlabel={createdAtLabel}
           onClick={toggleFavorite}
-          disabled={false}
+          disabled={pendingFavorite || pendingUnfavorite}
         />
       </div>
     </Link>
