@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   });
 
   if (board?.orgId !== authorization.orgId) {
-    return new Response('Unauthorized');
+    return new Response('Unauthorized', { status: 403 });
   }
 
   const session = liveblocks.prepareSession(user.id, {
