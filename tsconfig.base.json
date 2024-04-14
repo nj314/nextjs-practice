@@ -28,6 +28,12 @@
       "@nextjs-practice/whiteboard-home/server": [
         "libs/whiteboard/home/src/server.ts"
       ],
+      "@nextjs-practice/whiteboard-liveblocks": [
+        "libs/whiteboard/liveblocks/src/index.ts"
+      ],
+      "@nextjs-practice/whiteboard-liveblocks/server": [
+        "libs/whiteboard/liveblocks/src/server.ts"
+      ],
       "@shared": ["libs/shared/src/index.ts"],
       "@shared/*": ["libs/shared/src/lib/*"]
     }

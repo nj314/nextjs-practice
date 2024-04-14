@@ -1,3 +1,4 @@
+import { Room } from '@nextjs-practice/whiteboard-liveblocks';
 import { Canvas } from './components/canvas';
 
 type Props = {
@@ -7,5 +8,9 @@ type Props = {
 };
 
 export function CanvasPage({ params }: Props) {
-  return <Canvas boardId={params.boardId} />;
+  return (
+    <Room roomId={params.boardId}>
+      <Canvas boardId={params.boardId} />;
+    </Room>
+  );
 }

@@ -1,0 +1,8 @@
+{
+  "name": "whiteboard-liveblocks",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/whiteboard/liveblocks/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}
