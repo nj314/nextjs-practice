@@ -8,12 +8,35 @@ export const get = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error('Unauthorized');
+    const userId = identity.subject;
 
     const boards = await ctx.db
       .query('boards')
       .withIndex('by_org', (q) => q.eq('orgId', args.orgId))
       .order('desc')
       .collect();
-    return boards;
+
+    const userFavoriteBoards = await ctx.db
+      .query('userFavorites')
+      .withIndex('by_user_org', (q) =>
+        q.eq('userId', userId).eq('orgId', args.orgId)
+      )
+      .collect();
+
+    const boardsWithFavorites = boards.map((b) => ({
+      ...b,
+      isFavorite: userFavoriteBoards.some((f) => f.boardId === b._id),
+    }));
+
+    //     const boardsWithfavoriteRelation = boards.map((board) => {
+    // const isFavorite = await ctx.db
+    //         .query('userFavorites')
+    //         .withIndex('by_user_board', (q) =>
+    //           q.eq('userId', identity.subject).eq('boardId', board._id)
+    //         )
+    //         .unique()
+
+    // });
+    return boardsWithFavorites;
   },
 });
