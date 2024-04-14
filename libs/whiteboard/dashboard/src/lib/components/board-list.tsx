@@ -51,7 +51,7 @@ type Props = {
   query?: { favorites?: boolean; search?: string };
 };
 export function BoardList({ orgId, query }: Props) {
-  const data = useQuery(api.boards.get, { orgId });
+  const data = useQuery(api.boards.get, { orgId, search: query?.search });
 
   if (!data) {
     // Loading state
