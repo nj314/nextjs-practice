@@ -2,6 +2,7 @@
 
 export * from './alert';
 export * from './alert-dialog';
+export * from './avatar';
 export * from './button';
 export * from './dialog';
 export * from './dropdown-menu';
