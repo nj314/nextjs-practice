@@ -1,3 +1,4 @@
+'use client';
 import { ReactMutation, useMutation } from 'convex/react';
 import { FunctionReference } from 'convex/server';
 
