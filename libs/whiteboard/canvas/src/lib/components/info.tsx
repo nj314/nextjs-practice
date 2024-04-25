@@ -29,14 +29,14 @@ export function Info({ boardId }: Props) {
   if (!data) return <InfoSkeleton />;
 
   return (
-    <div className="absolute top-2 left-2 bg-white rounded-md px-1.5 h-12 flex items-center shadow-md">
+    <div className="absolute top-2 left-2 bg-white dark:bg-black rounded-md px-1.5 h-12 flex items-center shadow-md">
       <Hint label="Go to boards" side="bottom" sideOffset={10}>
         <Button variant="board" className="px-2" asChild>
           <Link href="/">
             <Image src="/logo-sm.png" alt="Board logo" height={40} width={40} />
             <span
               className={cn(
-                'font-semibold text-xl ml-2 text-black',
+                'font-semibold text-xl ml-2 text-black dark:text-white',
                 font.className
               )}
             >

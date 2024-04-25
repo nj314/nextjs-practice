@@ -51,7 +51,7 @@ export function Canvas({ boardId }: Props) {
   );
 
   return (
-    <main className="h-full w-full relative bg-neutral-100 touch-none">
+    <main className="h-full w-full relative bg-neutral-100 dark:bg-neutral-800 touch-none">
       <Info boardId={boardId} />
       <Toolbar
         canvasState={canvasState}

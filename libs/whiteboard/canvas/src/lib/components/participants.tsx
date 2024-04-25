@@ -10,7 +10,7 @@ export function Participants() {
   const hasMoreUsers = users.length > MAX_SHOWN_USERS;
 
   return (
-    <div className="absolute h-12 top-2 right-2 bg-white rounded-md p-3 flex items-center shadow-md">
+    <div className="absolute h-12 top-2 right-2 bg-white dark:bg-black rounded-md p-3 flex items-center shadow-md">
       <div className="flex gap-x-[-8pjkjx]">
         {users.slice(0, MAX_SHOWN_USERS).map((user) => (
           <UserAvatar
@@ -42,6 +42,6 @@ export function Participants() {
 
 export function ParticipantsSkeleton() {
   return (
-    <div className="absolute h-12 top-2 right-2 bg-white rounded-md p-3 flex items-center shadow-md w-[100px]" />
+    <div className="absolute h-12 top-2 right-2 bg-white dark:bg-black rounded-md p-3 flex items-center shadow-md w-[100px]" />
   );
 }
