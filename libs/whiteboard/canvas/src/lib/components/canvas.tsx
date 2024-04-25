@@ -43,6 +43,13 @@ export function Canvas({ boardId }: Props) {
     []
   );
 
+  const handlePointerLeave = useMutation(
+    ({ setMyPresence }, e: React.PointerEvent) => {
+      setMyPresence({ cursor: null });
+    },
+    []
+  );
+
   return (
     <main className="h-full w-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
@@ -57,6 +64,7 @@ export function Canvas({ boardId }: Props) {
       <svg
         className="h-[100vh] w-[100vw]"
         onWheel={handleWheel}
+        onPointerLeave={handlePointerLeave}
         onPointerMove={handlePointerMove}
       >
         <g>
