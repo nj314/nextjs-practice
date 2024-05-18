@@ -104,3 +104,10 @@ export type CanvasState =
   | { mode: typeof CanvasMode.Pencil }
   | { mode: typeof CanvasMode.Pressing; origin: Point }
   | { mode: typeof CanvasMode.Resizing; initialBounds: XYWH; corner: Side };
+
+export type Layer =
+  | RectangleLayer
+  | EllipseLayer
+  | PathLayer
+  | TextLayer
+  | NoteLayer;

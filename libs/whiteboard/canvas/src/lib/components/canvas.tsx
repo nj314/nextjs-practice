@@ -14,6 +14,8 @@ import { Info } from './info';
 import { Participants } from './participants';
 import { Toolbar } from './toolbar';
 
+const MAX_LAYERS = 100;
+
 type Props = {
   boardId: string;
 };
@@ -67,7 +69,7 @@ export function Canvas({ boardId }: Props) {
         onPointerLeave={handlePointerLeave}
         onPointerMove={handlePointerMove}
       >
-        <g>
+        <g style={{ transform: `translate(${camera.x}px, ${camera.y}px)` }}>
           <CursorsPresence />
         </g>
       </svg>
