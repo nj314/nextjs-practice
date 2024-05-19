@@ -16,6 +16,10 @@
     "baseUrl": ".",
     "paths": {
       "@convex/*": ["convex/_generated/*"],
+      "@nextjs-practice/rep-rater-quiz": ["libs/rep-rater/quiz/src/index.ts"],
+      "@nextjs-practice/rep-rater-quiz/server": [
+        "libs/rep-rater-quiz/src/server.ts"
+      ],
       "@nextjs-practice/whiteboard-canvas": [
         "libs/whiteboard/canvas/src/index.ts"
       ],
