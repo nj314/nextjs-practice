@@ -1,7 +1,7 @@
 {
   "name": "rep-rater-quiz",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/rep-rater-quiz/src",
+  "sourceRoot": "libs/rep-rater/quiz/src",
   "projectType": "library",
   "tags": [],
   "targets": {}

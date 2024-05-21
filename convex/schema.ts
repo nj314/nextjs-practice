@@ -23,4 +23,24 @@ export default defineSchema({
     .index('by_user_org', ['userId', 'orgId'])
     .index('by_user_board', ['userId', 'boardId'])
     .index('by_user_board_org', ['userId', 'boardId', 'orgId']),
+  quizzes: defineTable({
+    ownerId: v.string(),
+    title: v.string(),
+    slug: v.string(),
+    description: v.optional(v.string()),
+    isDisabled: v.optional(v.boolean()),
+  })
+    .index('by_slug', ['slug'])
+    .index('by_owner', ['ownerId']),
+  questions: defineTable({
+    quizId: v.id('quizzes'),
+    title: v.string(),
+    options: v.array(
+      v.object({
+        id: v.string(),
+        title: v.string(),
+        isDisabled: v.optional(v.boolean()),
+      })
+    ),
+  }).index('by_quiz', ['quizId']),
 });

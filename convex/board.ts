@@ -1,12 +1,6 @@
-import { Auth } from 'convex/server';
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
-
-async function ensureIdentity(auth: Auth) {
-  const identity = await auth.getUserIdentity();
-  if (!identity) throw new Error('Unauthorized');
-  return identity;
-}
+import { ensureIdentity } from './utils';
 
 export const create = mutation({
   args: {
