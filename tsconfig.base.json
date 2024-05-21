@@ -26,6 +26,12 @@
       "@nextjs-practice/rep-rater-quiz/server": [
         "libs/rep-rater/quiz/src/server.ts"
       ],
+      "@nextjs-practice/rep-rater-shared": [
+        "libs/rep-rater/shared/src/index.ts"
+      ],
+      "@nextjs-practice/rep-rater-shared/server": [
+        "libs/rep-rater/shared/src/server.ts"
+      ],
       "@nextjs-practice/whiteboard-canvas": [
         "libs/whiteboard/canvas/src/index.ts"
       ],

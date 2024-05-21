@@ -1,0 +1,8 @@
+{
+  "name": "rep-rater-shared",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/rep-rater/shared/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {}
+}
