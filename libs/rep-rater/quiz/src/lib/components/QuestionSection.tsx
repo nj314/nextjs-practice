@@ -7,7 +7,7 @@ import {
 } from '@shared/components/ui';
 
 type Props = {
-  onMove?: (direction: 'previous' | 'next') => void;
+  onMove?: (delta: number) => void;
   question: Doc<'questions'>;
 };
 
@@ -25,8 +25,8 @@ export function QuestionSection({ onMove, question }: Props) {
       </RadioGroup>
       {onMove && (
         <div className="flex">
-          <Button onClick={() => onMove('previous')}>Previous</Button>
-          <Button onClick={() => onMove('next')}>Next</Button>
+          <Button onClick={() => onMove(-1)}>Previous</Button>
+          <Button onClick={() => onMove(1)}>Next</Button>
         </div>
       )}
     </div>

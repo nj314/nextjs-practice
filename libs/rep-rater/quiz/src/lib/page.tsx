@@ -34,9 +34,7 @@ export const QuizPage: NextPage<Props> = ({ searchParams }) => {
       {question ? (
         <QuestionSection
           question={question}
-          onMove={(direction) =>
-            setQuestionIndex((q) => q + (direction === 'next' ? 1 : -1))
-          }
+          onMove={(delta) => setQuestionIndex((q) => q + delta)}
         />
       ) : (
         'No question found'
