@@ -11,7 +11,7 @@ type Props = {
   question: Doc<'questions'>;
 };
 
-export function Question({ onMove, question }: Props) {
+export function QuestionSection({ onMove, question }: Props) {
   return (
     <div className="flex flex-col">
       <h1>{question.title}</h1>

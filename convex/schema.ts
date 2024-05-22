@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
+import { quizStatusValidator } from './utils';
 
 export default defineSchema({
   boards: defineTable({
@@ -25,12 +26,14 @@ export default defineSchema({
     .index('by_user_board_org', ['userId', 'boardId', 'orgId']),
   quizzes: defineTable({
     ownerId: v.string(),
+    ownerOrgId: v.string(),
     title: v.string(),
     slug: v.string(),
     description: v.optional(v.string()),
-    isDisabled: v.optional(v.boolean()),
+    status: quizStatusValidator,
   })
-    .index('by_slug', ['slug'])
+    .index('by_slug_status', ['slug', 'status'])
+    .index('by_org', ['ownerOrgId'])
     .index('by_owner', ['ownerId']),
   questions: defineTable({
     quizId: v.id('quizzes'),
