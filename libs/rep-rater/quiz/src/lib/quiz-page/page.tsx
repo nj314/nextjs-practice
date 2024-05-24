@@ -5,8 +5,8 @@ import { Loading } from '@shared/components/ui';
 import { useQuery } from 'convex/react';
 import { NextPage } from 'next';
 import { useState } from 'react';
-import { QuestionSection } from './components/QuestionSection';
-import { QUIZ_SLUGS } from './constants';
+import { QuestionSection } from '../components/QuestionSection';
+import { QUIZ_SLUGS } from '../constants';
 
 type Props = {
   /**

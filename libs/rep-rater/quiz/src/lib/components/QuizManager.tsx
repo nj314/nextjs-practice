@@ -1,6 +1,6 @@
 'use client';
 import { api } from '@convex/api';
-import { Doc } from '@convex/dataModel';
+import { Doc, Id } from '@convex/dataModel';
 import { ConfirmModal } from '@shared/components/modals';
 import {
   Button,
@@ -11,13 +11,15 @@ import {
   TableHeader,
   TableRow,
 } from '@shared/components/ui';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { Pencil, Trash } from 'lucide-react';
-import { EditQuizDialog } from './EditQuizDialog';
 import { NewQuizDialog } from './NewQuizDialog';
 
-type Props = { quizzes: Array<Doc<'quizzes'>> };
-export function QuizManager({ quizzes }: Props) {
+type Props = {
+  quizzes: Array<Doc<'quizzes'>>;
+  onEdit: (quizId: Id<'quizzes'>) => void;
+};
+export function QuizManager({ quizzes, onEdit }: Props) {
   const remove = useMutation(api.quiz.remove);
 
   return (
@@ -55,11 +57,13 @@ export function QuizManager({ quizzes }: Props) {
                 {new Date(quiz._creationTime).toISOString()}
               </TableCell>
               <TableCell className="text-right flex">
-                <EditQuizDialog id={quiz._id}>
-                  <Button variant="outline" size="icon">
-                    <Pencil />
-                  </Button>
-                </EditQuizDialog>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onEdit(quiz._id)}
+                >
+                  <Pencil />
+                </Button>
                 <ConfirmModal
                   header={`Are you sure you want to delete "${quiz.title}"?`}
                   description="This cannot be undone."
@@ -76,10 +80,4 @@ export function QuizManager({ quizzes }: Props) {
       </Table>
     </div>
   );
-}
-
-export function AdminQuizManager() {
-  const quizzes = useQuery(api.quizzes.get, { isSuperUser: true });
-  if (!quizzes) return 'Loading...';
-  return <QuizManager quizzes={quizzes} />;
 }

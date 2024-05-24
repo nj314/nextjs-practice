@@ -42,7 +42,12 @@ export const get = query({
   handler: async (ctx, args) => {
     const quiz = await ctx.db.get(args.id);
     if (!quiz) throw new ConvexError('Quiz not found');
-    return quiz;
+    const questions = await ctx.db
+      .query('questions')
+      .withIndex('by_quiz')
+      .filter((q) => q.eq(q.field('quizId'), quiz._id))
+      .collect();
+    return { ...quiz, questions };
   },
 });
 

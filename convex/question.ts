@@ -32,3 +32,20 @@ export const create = mutation({
     return question;
   },
 });
+
+export const remove = mutation({
+  args: {
+    id: v.id('questions'),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ensureIdentity(ctx.auth);
+    const question = await ctx.db.get(args.id);
+    if (!question) throw new ConvexError('Question not found');
+    const quiz = await ctx.db.get(question.quizId);
+    if (!quiz) throw new ConvexError('Invalid quiz');
+    if (quiz.ownerId !== identity.subject)
+      throw new ConvexError('You are not authorized to change this quiz.');
+
+    await ctx.db.delete(args.id);
+  },
+});
