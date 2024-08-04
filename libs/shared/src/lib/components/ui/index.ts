@@ -3,6 +3,7 @@
 export * from './alert';
 export * from './alert-dialog';
 export * from './avatar';
+export * from './badge';
 export * from './button';
 export * from './card';
 export * from './dialog';
@@ -14,6 +15,7 @@ export * from './label';
 export * from './loading';
 export * from './radio-group';
 export * from './select';
+export * from './sheet';
 export * from './skeleton';
 export * from './sonner';
 export * from './table';
