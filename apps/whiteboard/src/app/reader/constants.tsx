@@ -5,3 +5,14 @@ export const AppIcon = (props: LucideProps) => {
 };
 
 export const APP_NAME = 'Scope';
+
+export type Book = {
+  id: string;
+  title: string;
+  author: string;
+  coverUrl: string;
+  contents: Array<{
+    type: string;
+    value: string;
+  }>;
+};

@@ -1,8 +1,7 @@
-export default function BookHomeLayout({ children }: React.PropsWithChildren) {
-  return (
-    <div className="flex flex-col w-full">
-      {/* <TopNavBar /> */}
-      {children}
-    </div>
-  );
+'use client';
+import { PropsWithChildren } from 'react';
+
+type Props = PropsWithChildren;
+export default function BookReaderLayout({ children }: Props) {
+  return children;
 }

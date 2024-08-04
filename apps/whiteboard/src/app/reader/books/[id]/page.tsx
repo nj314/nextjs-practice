@@ -1,7 +1,61 @@
 'use client';
+import { UserButton } from '@clerk/nextjs';
+import { Button, Slider } from '@shared/components/ui';
+import { ArrowLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { mockBook } from './mocks';
 
-export default function BookHomePage() {
+export default function BookReaderPage() {
   const { id: bookId } = useParams();
-  return <h1>Welcome to BookHomePage for book {bookId}</h1>;
+  const book = mockBook;
+  const [zoomLevel, setZoomLevel] = useState(0);
+  const MAX_ZOOM = 0;
+  const MIN_ZOOM = -1 * (book.contents.length - 1);
+
+  return (
+    <div className="dark:bg-zinc-950 w-full h-full">
+      <header className="flex flex-row justify-between drop-shadow-3 dark:bg-zinc-900 sticky pr-3 py-1">
+        <Link href="/reader" className="flex flex-row items-center p-2 gap-2">
+          <ArrowLeft />
+          Back
+        </Link>
+        <div className="flex flex-row min-w-[40%] items-center gap-3">
+          <Button
+            disabled={zoomLevel === MIN_ZOOM}
+            onClick={() => setZoomLevel(Math.max(MIN_ZOOM, zoomLevel - 1))}
+            variant="ghost"
+          >
+            <ZoomOut />
+          </Button>
+          <Slider
+            onChange={(e) => console.log(e)}
+            value={[zoomLevel]}
+            min={MIN_ZOOM}
+            max={MAX_ZOOM}
+            step={1}
+          />
+          <Button
+            disabled={zoomLevel === MAX_ZOOM}
+            onClick={() => setZoomLevel(Math.min(MAX_ZOOM, zoomLevel + 1))}
+            variant="ghost"
+          >
+            <ZoomIn />
+          </Button>
+        </div>
+        <UserButton />
+      </header>
+      <main>
+        <div className="">
+          <h1>Welcome to BookReaderPage for book {bookId}</h1>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: book.contents[zoomLevel * -1].value,
+            }}
+          />
+        </div>
+      </main>
+    </div>
+  );
 }

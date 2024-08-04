@@ -7,18 +7,21 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@shared/components/ui';
-import { Bell, Home, Menu, Search, Telescope } from 'lucide-react';
+import { Bell, Home, Menu, Search } from 'lucide-react';
 import Link from 'next/link';
-import { APP_NAME, AppIcon } from '../constants';
+import { mockBook } from '../books/[id]/mocks';
+import { APP_NAME, AppIcon, Book } from '../constants';
 
-export default function Dashboard() {
+const books: Book[] = [mockBook];
+
+export default function MyLibraryPage() {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[223px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="border-r hidden bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Telescope className="h-6 w-6" />
+              <AppIcon className="h-6 w-6" />
               <span className="">{APP_NAME}</span>
             </Link>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
@@ -33,7 +36,7 @@ export default function Dashboard() {
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <Home className="h-4 w-4" />
-                Dashboard
+                My Library
               </Link>
               {/* <Link
                 href="#"
@@ -97,7 +100,7 @@ export default function Dashboard() {
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
                   <Home className="h-5 w-5" />
-                  Dashboard
+                  My Library
                 </Link>
               </nav>
             </SheetContent>
@@ -121,20 +124,41 @@ export default function Dashboard() {
           <div className="flex items-center">
             <h1 className="text-lg font-semibold md:text-2xl">My Library</h1>
           </div>
-          <div
-            className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
-            x-chunk="dashboard-02-chunk-1"
-          >
-            <div className="flex flex-col items-center gap-1 text-center">
-              <h3 className="text-2xl font-bold tracking-tight">
-                You have no books
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Start by adding a book.
-              </p>
-              <Button className="mt-4">Add Book</Button>
+          {books.length > 0 && (
+            <div className="flex flex-1 flex-wrap" role="list">
+              {books.map((book) => (
+                <Link
+                  href={`/reader/books/${book.id}`}
+                  key={book.id}
+                  role="listitem"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={book.coverUrl}
+                    alt="cover art"
+                    width={200}
+                    height={200}
+                  />
+                </Link>
+              ))}
             </div>
-          </div>
+          )}
+          {books.length === 0 && (
+            <div
+              className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
+              x-chunk="dashboard-02-chunk-1"
+            >
+              <div className="flex flex-col items-center gap-1 text-center">
+                <h3 className="text-2xl font-bold tracking-tight">
+                  You have no books
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Start by adding a book.
+                </p>
+                <Button className="mt-4">Add Book</Button>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>

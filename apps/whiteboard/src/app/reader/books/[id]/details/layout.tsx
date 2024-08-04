@@ -1,4 +1,4 @@
-export default function BookReaderLayout({
+export default function BookDetailsLayout({
   children,
 }: React.PropsWithChildren) {
   return children;
