@@ -1,7 +1,4 @@
-const { join } = require('path');
 const { createGlobPatternsForDependencies } = require('@nrwl/next/tailwind');
-
-console.log('dirname for tailwind config', __dirname);
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -9,8 +6,8 @@ module.exports = {
   mode: 'jit',
   content: [
     // join(__dirname, 'src/**/*.{js,ts,jsx,tsx}'),
-    'apps/whiteboard/src/**/*.{js,ts,jsx,tsx}',
-    'libs/**/src/**/*.{js,ts,jsx,tsx}',
+    './src/**/*.{js,ts,jsx,tsx}',
+    '../../libs/**/src/**/*.{js,ts,jsx,tsx}',
     ...createGlobPatternsForDependencies(__dirname),
   ],
   darkMode: 'class',
