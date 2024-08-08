@@ -47,14 +47,12 @@ export default function BookReaderPage() {
         <UserButton />
       </header>
       <main>
-        <div className="">
-          <h1>Welcome to BookReaderPage for book {bookId}</h1>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: book.contents[zoomLevel * -1].value,
-            }}
-          />
-        </div>
+        <div
+          className="mx-auto px-5 py-3 w-full max-w-[400px]"
+          dangerouslySetInnerHTML={{
+            __html: book.contents[zoomLevel * -1].value,
+          }}
+        />
       </main>
     </div>
   );
