@@ -32,6 +32,12 @@
       "options": {
         "commands": ["npx convex dev"]
       }
+    },
+    "tunnel": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npx localtunnel --port 4200 -s eager-trains-mate"]
+      }
     }
   },
   "tags": []

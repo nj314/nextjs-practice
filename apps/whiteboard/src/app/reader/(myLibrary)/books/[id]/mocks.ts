@@ -1,4 +1,4 @@
-import { Book } from '../../constants';
+import { Book } from '../../../constants';
 
 export const mockBook: Book = {
   id: '1',

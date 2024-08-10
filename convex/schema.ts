@@ -46,4 +46,12 @@ export default defineSchema({
       })
     ),
   }).index('by_quiz', ['quizId']),
+  documents: defineTable({
+    title: v.string(),
+    ownerId: v.string(),
+    sourceUrl: v.string(),
+    summaryUrl: v.optional(v.string()),
+    coverUrl: v.optional(v.string()),
+    lastAccessTime: v.number(),
+  }).index('by_owner', ['ownerId']),
 });
