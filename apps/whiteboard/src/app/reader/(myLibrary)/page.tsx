@@ -1,7 +1,18 @@
 'use client';
 import { api } from '@convex/api';
-import { Button } from '@shared/components/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@shared/components/ui';
 import { useQuery } from 'convex/react';
+import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function MyLibraryPage() {
@@ -24,13 +35,37 @@ export default function MyLibraryPage() {
               key={book._id}
               role="listitem"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={book.coverUrl}
-                alt="cover art"
-                width={200}
-                height={200}
-              />
+              <Card>
+                <CardHeader>
+                  {book.coverUrl && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={book.coverUrl}
+                      alt="cover art"
+                      width={200}
+                      height={200}
+                      className="bg-slate-500"
+                    />
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <CardTitle>
+                    {book.title}{' '}
+                    {book.summaryStorageId && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CheckCircle name="check mark" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>AI summaries available</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </CardTitle>
+                </CardContent>
+              </Card>
             </Link>
           ))}
         </div>
@@ -38,7 +73,7 @@ export default function MyLibraryPage() {
 
       {!books && (
         <div
-          className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
+          className="flex flex-1 items-center justify-center"
           x-chunk="dashboard-02-chunk-1"
         >
           <div className="flex flex-col items-center gap-1 text-center">

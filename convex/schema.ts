@@ -51,9 +51,10 @@ export default defineSchema({
   documents: defineTable({
     title: v.string(),
     ownerId: v.string(),
-    sourceStorageId: v.string(),
+    sourceStorageId: v.id('_storage'),
     summaryStorageId: v.optional(v.string()),
     coverUrl: v.optional(v.string()),
     lastAccessTime: v.number(),
   }).index('by_owner', ['ownerId']),
+  sessions: defineTable({}),
 });

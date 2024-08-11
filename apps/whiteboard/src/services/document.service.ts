@@ -43,7 +43,7 @@ export async function enqueueDocumentSummaryJob(filePath: string) {
 
 export async function summarize(
   // filePath: string = '/Users/nate/Code/nextjs-practice/apps/whiteboard/src/app/reader/assets/abramov.txt'
-  filePath: string = '/Users/nate/Code/nextjs-practice/apps/whiteboard/src/app/reader/assets/canada.pdf'
+  filePath: string
 ) {
   console.log('Starting summarization job for ', filePath);
 

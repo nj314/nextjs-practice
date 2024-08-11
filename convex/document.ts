@@ -15,14 +15,14 @@ export const create = mutation({
       `Creating document, "${args.title}"`,
       ctx.storage.getUrl(args.sourceStorageId)
     );
-    const document = await ctx.db.insert('documents', {
+    const docId = await ctx.db.insert('documents', {
       title: args.title,
       ownerId: identity.subject,
       sourceStorageId: args.sourceStorageId,
       coverUrl: args.coverUrl,
       lastAccessTime: Number(new Date()),
     });
-    return document;
+    return docId;
   },
 });
 
@@ -53,8 +53,8 @@ export const update = mutation({
   args: {
     id: v.id('documents'),
     title: v.optional(v.string()),
-    sourceStorageId: v.optional(v.string()),
-    summaryUrl: v.optional(v.string()),
+    sourceStorageId: v.optional(v.id('_storage')),
+    summaryStorageId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { subject: userId } = await ensureIdentity(ctx.auth);
@@ -71,7 +71,7 @@ export const update = mutation({
     if (args.sourceStorageId) {
       patch.sourceStorageId = args.sourceStorageId;
     }
-    if (args.summaryUrl) {
+    if (args.summaryStorageId) {
       patch.sourceStorageId = args.sourceStorageId;
     }
 
@@ -85,5 +85,14 @@ export const get = query({
     const { subject: userId } = await ensureIdentity(ctx.auth);
     const document = await getDocument(ctx, { id: args.id, userId });
     return document;
+  },
+});
+
+export const getSourceUrl = query({
+  args: { documentId: v.string() },
+  handler: async (ctx, args) => {
+    const { subject: userId } = await ensureIdentity(ctx.auth);
+    const document = await getDocument(ctx, { id: args.documentId, userId });
+    return ctx.storage.getUrl(document.sourceStorageId);
   },
 });
