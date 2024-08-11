@@ -19,8 +19,6 @@ export function DocumentControl({ name }: Props) {
     hiddenInputRef.current?.click();
   };
 
-  console.log('file value is', value);
-
   return (
     <div>
       <input

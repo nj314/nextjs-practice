@@ -1,8 +1,10 @@
+import { migrationsTable } from 'convex-helpers/server/migrations';
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import { quizStatusValidator } from './utils';
 
 export default defineSchema({
+  migrations: migrationsTable,
   boards: defineTable({
     title: v.string(),
     orgId: v.string(),
@@ -49,8 +51,8 @@ export default defineSchema({
   documents: defineTable({
     title: v.string(),
     ownerId: v.string(),
-    sourceUrl: v.string(),
-    summaryUrl: v.optional(v.string()),
+    sourceStorageId: v.string(),
+    summaryStorageId: v.optional(v.string()),
     coverUrl: v.optional(v.string()),
     lastAccessTime: v.number(),
   }).index('by_owner', ['ownerId']),

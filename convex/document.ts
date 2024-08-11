@@ -6,15 +6,19 @@ import { ensureIdentity } from './utils';
 export const create = mutation({
   args: {
     title: v.string(),
-    sourceUrl: v.string(),
+    sourceStorageId: v.id('_storage'),
     coverUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ensureIdentity(ctx.auth);
+    console.log(
+      `Creating document, "${args.title}"`,
+      ctx.storage.getUrl(args.sourceStorageId)
+    );
     const document = await ctx.db.insert('documents', {
       title: args.title,
       ownerId: identity.subject,
-      sourceUrl: args.sourceUrl,
+      sourceStorageId: args.sourceStorageId,
       coverUrl: args.coverUrl,
       lastAccessTime: Number(new Date()),
     });
@@ -49,7 +53,7 @@ export const update = mutation({
   args: {
     id: v.id('documents'),
     title: v.optional(v.string()),
-    sourceUrl: v.optional(v.string()),
+    sourceStorageId: v.optional(v.string()),
     summaryUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -64,11 +68,11 @@ export const update = mutation({
         );
       patch.title = args.title;
     }
-    if (args.sourceUrl) {
-      patch.sourceUrl = args.sourceUrl;
+    if (args.sourceStorageId) {
+      patch.sourceStorageId = args.sourceStorageId;
     }
     if (args.summaryUrl) {
-      patch.sourceUrl = args.sourceUrl;
+      patch.sourceStorageId = args.sourceStorageId;
     }
 
     await ctx.db.patch(args.id, patch);

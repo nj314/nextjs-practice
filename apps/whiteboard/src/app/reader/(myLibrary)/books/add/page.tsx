@@ -36,7 +36,7 @@ export default function AddDocument() {
     const { storageId } = await result.json();
     // Step 3: Save the newly allocated storage id to the database
     console.log('storage id is', storageId);
-    await createDocument({ title, sourceUrl: storageId });
+    await createDocument({ title, sourceStorageId: storageId });
   });
 
   return (
