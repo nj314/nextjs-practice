@@ -22,7 +22,11 @@ const nextConfig = withLlamaIndex({
   },
   transpilePackages: [],
   experimental: {
-    serverComponentsExternalPackages: ['sharp', 'onnxruntime-node'],
+    serverComponentsExternalPackages: [
+      'sharp',
+      'onnxruntime-node',
+      'llamaindex',
+    ],
   },
 });
 
