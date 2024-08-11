@@ -1,22 +1,19 @@
-import { Client } from '@upstash/qstash';
+// import { Client } from '@upstash/qstash';
 import {
-  Document,
-  MetadataMode,
-  NodeWithScore,
+  LlamaParseReader,
   Ollama,
   Settings,
   VectorStoreIndex,
 } from 'llamaindex';
-import fs from 'node:fs/promises';
 
 Settings.llm = new Ollama({
   model: 'llama3.1:8b',
 });
 
-const qstashClient = new Client({
-  // Add your token to a .env file
-  token: process.env.QSTASH_TOKEN!,
-});
+// const qstashClient = new Client({
+//   // Add your token to a .env file
+//   token: process.env.QSTASH_TOKEN!,
+// });
 
 const mark = () => {
   console.log(`Duration: ${performance.measure('1').duration}`);
@@ -44,45 +41,33 @@ export async function enqueueDocumentSummaryJob(filePath: string) {
 }
   */
 
-export async function summarize(filePath: string) {
+export async function summarize(
+  // filePath: string = '/Users/nate/Code/nextjs-practice/apps/whiteboard/src/app/reader/assets/abramov.txt'
+  filePath: string = '/Users/nate/Code/nextjs-practice/apps/whiteboard/src/app/reader/assets/canada.pdf'
+) {
   console.log('Starting summarization job for ', filePath);
-  // Load document content
-  const documentContent = await fs.readFile(filePath, { encoding: 'utf-8' });
-  console.log(`Document content: ${documentContent.slice(0, 50)}...`);
-  mark();
 
-  // Create Document object
-  const document = new Document({
-    text: documentContent,
-    id_: 'input-document',
+  // set up the llamaparse reader
+  const reader = new LlamaParseReader({
+    resultType: 'markdown',
+    fastMode: true,
   });
-  mark();
+
+  // parse the document
+  const documents = await reader.loadData(filePath);
 
   // Split text and create embeddings. Store them in a VectorStoreIndex
-  const index = await VectorStoreIndex.fromDocuments([document]);
-  mark();
+  const index = await VectorStoreIndex.fromDocuments(documents);
 
   // Query the index
   const queryEngine = index.asQueryEngine();
-  mark();
   const { response, sourceNodes } = await queryEngine.query({
     query:
-      'Please summarize each chapter of this book. Do not skip any chapters. Each summary should be 1-3 sentences long.',
+      'Please summarize each chapter of the document. Do not skip any chapters. Each summary should be 1-3 sentences long.',
   });
-  mark();
 
   // Output response with sources
   console.log(response);
-
-  if (sourceNodes) {
-    sourceNodes.forEach((source: NodeWithScore, index: number) => {
-      console.log(
-        `\n${index}: Score: ${source.score} - ${source.node
-          .getContent(MetadataMode.NONE)
-          .substring(0, 50)}...\n`
-      );
-    });
-  }
 
   return response;
 }
