@@ -6,7 +6,7 @@ const withLlamaIndex = require('llamaindex/next').default;
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
-const nextConfig = withLlamaIndex({
+let nextConfig = {
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr
@@ -26,9 +26,11 @@ const nextConfig = withLlamaIndex({
       'sharp',
       'onnxruntime-node',
       'llamaindex',
+      // 'node:async_hooks',
     ],
   },
-});
+};
+nextConfig = withLlamaIndex(nextConfig);
 
 const plugins = [
   // Add more Next.js plugins to this list if needed.

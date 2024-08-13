@@ -15,7 +15,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const { orgId, slug, title, description } = args.formValues;
     if (!orgId) throw new ConvexError('Missing org id');
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
     const existingSlug = await ctx.db
       .query('quizzes')
       .withIndex('by_slug_status')
@@ -23,7 +23,7 @@ export const create = mutation({
       .unique();
     if (existingSlug) throw new ConvexError('Slugs must be unique.');
     const id = await ctx.db.insert('quizzes', {
-      ownerId: identity.subject,
+      ownerId: user.id,
       ownerOrgId: orgId,
       title,
       description,
@@ -84,10 +84,10 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     const { id, title = '', description = '', slug = '', status } = args;
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
     const quiz = await ctx.db.get(id);
     if (!quiz) throw new ConvexError('Quiz not found');
-    if (quiz.ownerId !== identity.subject)
+    if (quiz.ownerId !== user.id)
       throw new ConvexError('You are not authorized to modify this quiz.');
 
     // Fields set to undefined are removed
@@ -100,10 +100,10 @@ export const remove = mutation({
     id: v.id('quizzes'),
   },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
     const quiz = await ctx.db.get(args.id);
     if (!quiz) throw new ConvexError('Quiz not found');
-    if (quiz.ownerId !== identity.subject)
+    if (quiz.ownerId !== user.id)
       throw new ConvexError('You are not authorized to delete this quiz.');
 
     await ctx.db.delete(args.id);

@@ -8,9 +8,9 @@ export const get = query({
     favorites: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error('Unauthorized');
-    const userId = identity.subject;
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) throw new Error('Unauthorized');
+    const userId = user.subject;
 
     const title = args.search;
     const boards = await (async function () {

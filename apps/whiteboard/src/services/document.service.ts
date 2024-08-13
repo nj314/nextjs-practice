@@ -1,14 +1,24 @@
+'use server';
 // import { Client } from '@upstash/qstash';
+import fs from 'fs';
+import { mkdir } from 'fs/promises';
 import {
-  LlamaParseReader,
-  Ollama,
+  OpenAI,
   Settings,
+  SimpleDirectoryReader,
   VectorStoreIndex,
 } from 'llamaindex';
+import mime from 'mime-types';
+import path from 'path';
+import { Readable } from 'stream';
+import { finished } from 'stream/promises';
+import { ReadableStream } from 'stream/web';
 
-Settings.llm = new Ollama({
-  model: 'llama3.1:8b',
-});
+// Settings.llm = new Ollama({
+//   model: 'llama3.1:8b',
+// });
+
+Settings.llm = new OpenAI({ model: 'gpt-4o-mini' });
 
 // const qstashClient = new Client({
 //   // Add your token to a .env file
@@ -41,20 +51,31 @@ export async function enqueueDocumentSummaryJob(filePath: string) {
 }
   */
 
-export async function summarize(
+export async function summarize(args: {
   // filePath: string = '/Users/nate/Code/nextjs-practice/apps/whiteboard/src/app/reader/assets/abramov.txt'
-  filePath: string
-) {
-  console.log('Starting summarization job for ', filePath);
+  sourceDocId: string;
+  sourceUrl: string;
+}) {
+  const { sourceUrl, sourceDocId } = args;
+  console.log('Starting summarization job for ', sourceUrl);
+  const localFilePath = await downloadFile(sourceUrl, sourceDocId);
+  console.log('local file path', localFilePath);
 
   // set up the llamaparse reader
-  const reader = new LlamaParseReader({
-    resultType: 'markdown',
-    fastMode: true,
+  const reader = new SimpleDirectoryReader((category, fileName) => {
+    console.log(`Trying to read ${category}:`, fileName);
+    if (category === 'directory') return true;
+    return fileName === localFilePath;
   });
+  // const reader = new LlamaParseReader({
+  //   resultType: 'markdown',
+  //   fastMode: true,
+  // });
 
   // parse the document
-  const documents = await reader.loadData(filePath);
+  const documents = await reader.loadData(path.dirname(localFilePath));
+  if (!documents?.length)
+    throw new Error('Unable to load document into reader');
 
   // Split text and create embeddings. Store them in a VectorStoreIndex
   const index = await VectorStoreIndex.fromDocuments(documents);
@@ -70,4 +91,29 @@ export async function summarize(
   console.log(response);
 
   return response;
+}
+
+async function downloadFile(url: string, fileName: string) {
+  const res = await fetch(url);
+  if (!res.body) throw new Error('Failed to download file');
+  const parentFolder = './tmp/downloads';
+  if (!fs.existsSync(parentFolder))
+    await mkdir(parentFolder, { recursive: true }); //Optional if you already have downloads directory
+  console.log('download response headers', { ...res.headers });
+  // mime.extensions['text/markdown'] = ['md'];
+  let extension = mime.extension(res.headers.get('content-type') ?? 'unknown');
+  switch (extension) {
+    case 'markdown':
+      extension = 'md';
+      break;
+    default:
+      break;
+  }
+  console.log('extension of downloaded file is', extension);
+  const destination = path.resolve(parentFolder, `${fileName}.${extension}`);
+  const fileStream = fs.createWriteStream(destination, { flags: 'wx' });
+  await finished(
+    Readable.fromWeb(res.body as ReadableStream<any>).pipe(fileStream)
+  );
+  return destination;
 }

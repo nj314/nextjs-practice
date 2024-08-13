@@ -13,7 +13,7 @@ import { FormProvider } from 'react-hook-form';
 import { DocumentControl } from './DocumentControl';
 import { TitleFormItem } from './TitleFormItem';
 import { ACCEPTED_FILE_TYPES, useDocumentForm } from './form';
-import { dispatchDocumentSummaryJob } from './server-actions';
+import { dispatchDocumentSummaryJob, getContentType } from './server-actions';
 
 export default function AddDocument() {
   // 1. Define your form.
@@ -22,26 +22,22 @@ export default function AddDocument() {
   const createDocument = useMutation(api.document.create);
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    // *********************************************************
-    // TODO start a user session here
-    // and use it for authentication on the server side
-    // *********************************************************
-
     // Step 1: Get a short-lived upload URL
     const postUrl = await generateUploadUrl();
     // Step 2: POST the file to the URL
     const { documentFile, title } = values;
+    console.log('form values', values);
     const result = await fetch(postUrl, {
       method: 'POST',
-      headers: { 'Content-Type': documentFile.type },
+      headers: { 'Content-Type': await getContentType(documentFile.name) },
       body: documentFile,
     });
-    const { storageId } = await result.json();
+    const responseBody = await result.json();
     // Step 3: Save the newly allocated storage id to the database
-    console.log('storage id is', storageId);
+    console.log('response body is', responseBody);
     const sourceDocId = await createDocument({
       title,
-      sourceStorageId: storageId,
+      sourceStorageId: responseBody.storageId,
     });
     await dispatchDocumentSummaryJob({
       sourceDocId,

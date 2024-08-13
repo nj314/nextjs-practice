@@ -14,10 +14,10 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
     const quiz = await ctx.db.get(args.quizId);
     if (!quiz) throw new ConvexError('Quiz not found');
-    if (quiz.ownerId !== identity.subject)
+    if (quiz.ownerId !== user.id)
       throw new ConvexError('You are not authorized to change this quiz.');
     const question = await ctx.db.insert('questions', {
       quizId: quiz._id,
@@ -38,12 +38,12 @@ export const remove = mutation({
     id: v.id('questions'),
   },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
     const question = await ctx.db.get(args.id);
     if (!question) throw new ConvexError('Question not found');
     const quiz = await ctx.db.get(question.quizId);
     if (!quiz) throw new ConvexError('Invalid quiz');
-    if (quiz.ownerId !== identity.subject)
+    if (quiz.ownerId !== user.id)
       throw new ConvexError('You are not authorized to change this quiz.');
 
     await ctx.db.delete(args.id);

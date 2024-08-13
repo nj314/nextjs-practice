@@ -1,5 +1,5 @@
 import { v } from 'convex/values';
-import { Doc, Id } from './_generated/dataModel';
+import { Id } from './_generated/dataModel';
 import { QueryCtx, mutation, query } from './_generated/server';
 import { ensureIdentity } from './utils';
 
@@ -10,14 +10,14 @@ export const create = mutation({
     coverUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
     console.log(
       `Creating document, "${args.title}"`,
       ctx.storage.getUrl(args.sourceStorageId)
     );
     const docId = await ctx.db.insert('documents', {
       title: args.title,
-      ownerId: identity.subject,
+      ownerId: user.id,
       sourceStorageId: args.sourceStorageId,
       coverUrl: args.coverUrl,
       lastAccessTime: Number(new Date()),
@@ -43,7 +43,7 @@ async function getDocument(
 export const remove = mutation({
   args: { id: v.string() },
   handler: async (ctx, args) => {
-    const { subject: userId } = await ensureIdentity(ctx.auth);
+    const { id: userId } = await ensureIdentity(ctx);
     await getDocument(ctx, { id: args.id, userId });
     await ctx.db.delete(args.id as Id<'documents'>);
   },
@@ -54,35 +54,38 @@ export const update = mutation({
     id: v.id('documents'),
     title: v.optional(v.string()),
     sourceStorageId: v.optional(v.id('_storage')),
-    summaryStorageId: v.optional(v.string()),
+    summaryStorageId: v.optional(v.id('_storage')),
   },
   handler: async (ctx, args) => {
-    const { subject: userId } = await ensureIdentity(ctx.auth);
-    await getDocument(ctx, { id: args.id, userId });
-    const patch: Partial<Doc<'documents'>> = {};
+    const { id: userId } = await ensureIdentity(ctx);
+    const doc = await getDocument(ctx, { id: args.id, userId });
+    console.log('Original doc', doc);
+    doc.lastAccessTime = Number(new Date());
     if (args.title) {
       const TITLE_MAX_LENGTH = 60;
       if (args.title.length > TITLE_MAX_LENGTH)
         throw new Error(
           `Title cannot be more than ${TITLE_MAX_LENGTH} characters`
         );
-      patch.title = args.title;
+      doc.title = args.title;
     }
     if (args.sourceStorageId) {
-      patch.sourceStorageId = args.sourceStorageId;
+      doc.sourceStorageId = args.sourceStorageId;
     }
     if (args.summaryStorageId) {
-      patch.sourceStorageId = args.sourceStorageId;
+      doc.summaryStorageId = args.summaryStorageId;
     }
 
-    await ctx.db.patch(args.id, patch);
+    console.log('Writing document to db:', doc);
+
+    await ctx.db.patch(args.id, doc);
   },
 });
 
 export const get = query({
   args: { id: v.string() },
   handler: async (ctx, args) => {
-    const { subject: userId } = await ensureIdentity(ctx.auth);
+    const { id: userId } = await ensureIdentity(ctx);
     const document = await getDocument(ctx, { id: args.id, userId });
     return document;
   },
@@ -91,8 +94,8 @@ export const get = query({
 export const getSourceUrl = query({
   args: { documentId: v.string() },
   handler: async (ctx, args) => {
-    const { subject: userId } = await ensureIdentity(ctx.auth);
-    const document = await getDocument(ctx, { id: args.documentId, userId });
-    return ctx.storage.getUrl(document.sourceStorageId);
+    const { sourceStorageId } = await get(ctx, { id: args.documentId });
+    if (!sourceStorageId) throw new Error('No source storage id');
+    return ctx.storage.getUrl(sourceStorageId);
   },
 });

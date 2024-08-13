@@ -7,9 +7,7 @@ export const get = query({
     isSuperUser: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error('Unauthorized');
-    const userId = identity.subject;
+    await ctx.auth.getUserIdentity();
 
     if (args.orgId) {
       return await ctx.db

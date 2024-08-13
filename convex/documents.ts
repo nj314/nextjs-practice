@@ -7,7 +7,7 @@ export const get = query({
   // search: v.optional(v.string()),
   // },
   handler: async (ctx, args) => {
-    const { subject: userId } = await ensureIdentity(ctx.auth);
+    const { id: userId } = await ensureIdentity(ctx);
 
     const documents = await ctx.db
       .query('documents')

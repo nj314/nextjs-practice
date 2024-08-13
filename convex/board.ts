@@ -8,12 +8,12 @@ export const create = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
     const board = await ctx.db.insert('boards', {
       title: args.title,
       orgId: args.orgId,
-      authorId: identity.subject,
-      authorName: identity.name ?? identity.nickname ?? 'Unknown author',
+      authorId: user.id,
+      authorName: user.fullName ?? user.username ?? 'Unknown author',
       imageUrl: '',
     });
     return board;
@@ -23,8 +23,8 @@ export const create = mutation({
 export const remove = mutation({
   args: { id: v.id('boards') },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
-    const userId = identity.subject;
+    const user = await ensureIdentity(ctx);
+    const userId = user.id;
 
     const existingFavorite = await ctx.db
       .query('userFavorites')
@@ -43,7 +43,7 @@ export const update = mutation({
   args: { id: v.id('boards'), title: v.string() },
   handler: async (ctx, args) => {
     // TODO auth here
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
 
     const TITLE_MAX_LENGTH = 60;
     const title = args.title.trim();
@@ -64,12 +64,12 @@ export const update = mutation({
 export const favorite = mutation({
   args: { id: v.id('boards'), orgId: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
 
     const board = await ctx.db.get(args.id);
     if (!board) throw new Error('Board not found');
 
-    const userId = identity.subject;
+    const userId = user.id;
     const existingFavorite = await ctx.db
       .query('userFavorites')
       .withIndex('by_user_board_org', (q) =>
@@ -92,12 +92,12 @@ export const favorite = mutation({
 export const unfavorite = mutation({
   args: { id: v.id('boards'), orgId: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ensureIdentity(ctx.auth);
+    const user = await ensureIdentity(ctx);
 
     const board = await ctx.db.get(args.id);
     if (!board) throw new Error('Board not found');
 
-    const userId = identity.subject;
+    const userId = user.id;
     const existingFavorite = await ctx.db
       .query('userFavorites')
       .withIndex('by_user_board', (q) =>

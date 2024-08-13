@@ -1,9 +1,15 @@
 'use server';
+import { currentUser } from '@clerk/nextjs/server';
 import { api } from '@convex/api';
 import { Id } from '@convex/dataModel';
 import { fetchMutation, fetchQuery } from 'convex/nextjs';
 import mime from 'mime-types';
 import { summarize } from '../../../../../services/document.service';
+import { getAuthToken } from '../../../../auth';
+
+export async function getContentType(fileNameOrExtension: string) {
+  return mime.contentType(fileNameOrExtension) || 'application/octet-stream';
+}
 
 /**
  * React Server Action to dispatch a document summary job.
@@ -16,19 +22,34 @@ export async function dispatchDocumentSummaryJob(args: {
   sourceDocId: Id<'documents'>;
 }) {
   const { sourceDocId } = args;
-  const fileUrl = await fetchQuery(api.document.getSourceUrl, {
-    documentId: sourceDocId,
-  });
-  if (!fileUrl) throw new Error('Could not get file URL.');
-  const summarizePromise = summarize(fileUrl); // do not await
-  console.log('Summary job dispatched for source file:', fileUrl);
+  const user = await currentUser();
+  console.log('the current user is ', user);
+  if (!user) {
+    throw new Error('Not authenticated, aborting');
+  }
 
-  const summaryContent = await summarizePromise;
-  console.log('Summary job COMPLETE for source file:', fileUrl);
+  const token = await getAuthToken();
+  const sourceUrl = await fetchQuery(
+    api.document.getSourceUrl,
+    { documentId: sourceDocId },
+    { token }
+  );
+  if (!sourceUrl) throw new Error('Could not get source file URL.');
+  console.log('Summary job: source file url is', sourceUrl);
+  const summaryPromise = summarize({ sourceDocId, sourceUrl }); // do not await
+  console.log('Summary job dispatched for source file:', sourceUrl);
+
+  const summaryContent = await summaryPromise;
+  console.log('Summary job COMPLETE for source file:', sourceUrl);
 
   // const summaryFilePath = `./summary-${sourceStorageId}.md`;
   // const localFile = await fs.open(summaryFilePath);
-  const uploadUrl = await fetchMutation(api.file.generateUploadUrl);
+  const uploadUrl = await fetchMutation(
+    api.file.generateUploadUrl,
+    {},
+    { token }
+  );
+  console.log('upload url is', uploadUrl);
   const response = await fetch(uploadUrl, {
     method: 'POST',
     headers: {
@@ -38,8 +59,14 @@ export async function dispatchDocumentSummaryJob(args: {
   });
 
   const { storageId: summaryStorageId } = await response.json();
-  await fetchMutation(api.document.update, {
-    id: sourceDocId,
-    summaryStorageId,
-  });
+  console.log('Uploaded summary document storage id:', summaryStorageId);
+  console.log('Updating document with id', sourceDocId);
+  await fetchMutation(
+    api.document.update,
+    {
+      id: sourceDocId,
+      summaryStorageId,
+    },
+    { token }
+  );
 }

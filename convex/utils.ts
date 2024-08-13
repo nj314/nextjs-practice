@@ -1,10 +1,16 @@
-import { Auth } from 'convex/server';
 import { Infer, v } from 'convex/values';
+import { QueryCtx } from './_generated/server';
 
-export async function ensureIdentity(auth: Auth) {
-  const identity = await auth.getUserIdentity();
-  if (!identity) throw new Error('Unauthorized');
-  return identity;
+export async function ensureIdentity(ctx: QueryCtx) {
+  const user = await ctx.auth.getUserIdentity();
+  // const user = await currentUser();
+  if (!user) throw new Error('Unauthorized');
+  return {
+    ...user,
+    fullName: user.name,
+    username: user.preferredUsername,
+    id: user.subject,
+  };
 }
 
 export const quizStatusValidator = v.union(
