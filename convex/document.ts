@@ -1,6 +1,7 @@
 import { v } from 'convex/values';
+import { api } from './_generated/api';
 import { Id } from './_generated/dataModel';
-import { QueryCtx, mutation, query } from './_generated/server';
+import { QueryCtx, action, mutation, query } from './_generated/server';
 import { ensureIdentity } from './utils';
 
 export const create = mutation({
@@ -97,5 +98,19 @@ export const getSourceUrl = query({
     const { sourceStorageId } = await get(ctx, { id: args.documentId });
     if (!sourceStorageId) throw new Error('No source storage id');
     return ctx.storage.getUrl(sourceStorageId);
+  },
+});
+
+export const getSummary = action({
+  args: { id: v.string() },
+  handler: async (ctx, args): Promise<string> => {
+    const { summaryStorageId } = await ctx.runQuery(api.document.get, {
+      id: args.id,
+    });
+    if (!summaryStorageId) throw new Error('No summary available');
+    const url = await ctx.storage.getUrl(summaryStorageId);
+    if (!url) throw new Error('Failed to create URL');
+    const res = await fetch(url);
+    return await res.text();
   },
 });

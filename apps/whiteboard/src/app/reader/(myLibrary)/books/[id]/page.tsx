@@ -1,59 +1,24 @@
-'use client';
-import { UserButton } from '@clerk/nextjs';
-import { Button, Slider } from '@shared/components/ui';
-import { ArrowLeft, ZoomIn, ZoomOut } from 'lucide-react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useState } from 'react';
-import { mockBook } from './mocks';
+'use server';
+import { api } from '@convex/api';
+import { fetchAction } from 'convex/nextjs';
+import showdown from 'showdown';
+import { getAuthToken } from '../../../../auth';
+import { BookReaderPageClient } from './BookReaderPageClient';
 
-export default function BookReaderPage() {
-  const { id: bookId } = useParams();
-  const book = mockBook;
-  const [zoomLevel, setZoomLevel] = useState(0);
-  const MAX_ZOOM = 0;
-  const MIN_ZOOM = -1 * (book.contents.length - 1);
-
-  return (
-    <div className="dark:bg-zinc-950 w-full h-full">
-      <header className="flex flex-row justify-between drop-shadow-3 dark:bg-zinc-900 sticky pr-3 py-1">
-        <Link href="/reader" className="flex flex-row items-center p-2 gap-2">
-          <ArrowLeft />
-          Back
-        </Link>
-        <div className="flex flex-row min-w-[40%] items-center gap-3">
-          <Button
-            disabled={zoomLevel === MIN_ZOOM}
-            onClick={() => setZoomLevel(Math.max(MIN_ZOOM, zoomLevel - 1))}
-            variant="ghost"
-          >
-            <ZoomOut />
-          </Button>
-          <Slider
-            onChange={(e) => console.log(e)}
-            value={[zoomLevel]}
-            min={MIN_ZOOM}
-            max={MAX_ZOOM}
-            step={1}
-          />
-          <Button
-            disabled={zoomLevel === MAX_ZOOM}
-            onClick={() => setZoomLevel(Math.min(MAX_ZOOM, zoomLevel + 1))}
-            variant="ghost"
-          >
-            <ZoomIn />
-          </Button>
-        </div>
-        <UserButton />
-      </header>
-      <main>
-        <div
-          className="mx-auto px-5 py-3 w-full max-w-[400px]"
-          dangerouslySetInnerHTML={{
-            __html: book.contents[zoomLevel * -1].value,
-          }}
-        />
-      </main>
-    </div>
+async function getSummary(id: string) {
+  const md = await fetchAction(
+    api.document.getSummary,
+    { id },
+    { token: await getAuthToken() }
   );
+  const converter = new showdown.Converter();
+  return converter.makeHtml(md);
+}
+
+type Props = { params: { id: string } };
+
+export default async function BookReaderPage({ params }: Props) {
+  const { id: documentId } = params;
+  const summary = await getSummary(documentId as string);
+  return <BookReaderPageClient summary={summary} />;
 }
