@@ -1,5 +1,5 @@
 'use server';
-// import { Client } from '@upstash/qstash';
+import { ZoomLevel } from 'convex/document';
 import fs from 'fs';
 import { mkdir } from 'fs/promises';
 import {
@@ -13,6 +13,7 @@ import path from 'path';
 import { Readable } from 'stream';
 import { finished } from 'stream/promises';
 import { ReadableStream } from 'stream/web';
+import { ZOOM_LEVELS } from '../domain/document.types';
 
 // Settings.llm = new Ollama({
 //   model: 'llama3.1:8b',
@@ -20,50 +21,30 @@ import { ReadableStream } from 'stream/web';
 
 Settings.llm = new OpenAI({ model: 'gpt-4o-mini' });
 
-// const qstashClient = new Client({
-//   // Add your token to a .env file
-//   token: process.env.QSTASH_TOKEN!,
-// });
-
-const mark = () => {
-  console.log(`Duration: ${performance.measure('1').duration}`);
-  performance.mark('1');
+const ZOOM_PROMPTS: Record<ZoomLevel, string> = {
+  original: '',
+  paragraph:
+    'Please summarize each paragraph of the document. Do not skip any paragraphs. Each summary should be one sentence long.',
+  multiParagraph:
+    'For each 5-10 paragraphs of the document, provide a summary. Do not skip any paragraphs. Each summary should be 1-3 sentences long.',
+  chapter:
+    'For each chapter of the document, provide a summary. Do not skip any chapters. Each summary should be 1-3 sentences long.',
 };
-
-export type DocumentSummaryJob = {
-  docId: string;
-  filePath: string;
-};
-
-/*
-export async function enqueueDocumentSummaryJob(filePath: string) {
-  const body: DocumentSummaryJob = {
-    docId: new Date().toISOString(),
-    filePath,
-  };
-  const url = `${process.env.QSTASH_URL}/reader/summarize-document/job`;
-  console.log('url', url);
-  await qstashClient.publishJSON({
-    url: url,
-    body,
-  });
-  console.log(`Enqueued job for ${filePath}`);
-}
-  */
 
 export async function summarize(args: {
-  // filePath: string = '/Users/nate/Code/nextjs-practice/apps/whiteboard/src/app/reader/assets/abramov.txt'
   sourceDocId: string;
   sourceUrl: string;
+  zoomLevels?: ZoomLevel[];
 }) {
-  const { sourceUrl, sourceDocId } = args;
-  console.log('Starting summarization job for ', sourceUrl);
+  const { sourceUrl, sourceDocId, zoomLevels = ZOOM_LEVELS } = args;
+  if (zoomLevels.length === 0) return [];
+  console.log(`Starting summarization jobs for ${sourceUrl}`);
   const localFilePath = await downloadFile(sourceUrl, sourceDocId);
-  console.log('local file path', localFilePath);
+  // console.log('local file path', localFilePath);
 
   // set up the llamaparse reader
   const reader = new SimpleDirectoryReader((category, fileName) => {
-    console.log(`Trying to read ${category}:`, fileName);
+    // console.log(`Trying to read ${category}:`, fileName);
     if (category === 'directory') return true;
     return fileName === localFilePath;
   });
@@ -82,15 +63,22 @@ export async function summarize(args: {
 
   // Query the index
   const queryEngine = index.asQueryEngine();
-  const { response, sourceNodes } = await queryEngine.query({
-    query:
-      'Please summarize each chapter of the document. Do not skip any chapters. Each summary should be 1-3 sentences long.',
-  });
+
+  const summaries = await Promise.all(
+    zoomLevels
+      .filter((z) => z !== 'original')
+      .map(async (zoomLevel) => {
+        const { response, sourceNodes } = await queryEngine.query({
+          query: ZOOM_PROMPTS[zoomLevel],
+        });
+        return { zoomLevel, summary: response };
+      })
+  );
 
   // Output response with sources
-  console.log(response);
+  // console.log(response);
 
-  return response;
+  return summaries;
 }
 
 async function downloadFile(url: string, fileName: string) {
@@ -99,7 +87,7 @@ async function downloadFile(url: string, fileName: string) {
   const parentFolder = './tmp/downloads';
   if (!fs.existsSync(parentFolder))
     await mkdir(parentFolder, { recursive: true }); //Optional if you already have downloads directory
-  console.log('download response headers', { ...res.headers });
+  // console.log('download response headers', { ...res.headers });
   // mime.extensions['text/markdown'] = ['md'];
   let extension = mime.extension(res.headers.get('content-type') ?? 'unknown');
   switch (extension) {
@@ -109,7 +97,7 @@ async function downloadFile(url: string, fileName: string) {
     default:
       break;
   }
-  console.log('extension of downloaded file is', extension);
+  // console.log('extension of downloaded file is', extension);
   const destination = path.resolve(parentFolder, `${fileName}.${extension}`);
   const fileStream = fs.createWriteStream(destination, { flags: 'wx' });
   await finished(

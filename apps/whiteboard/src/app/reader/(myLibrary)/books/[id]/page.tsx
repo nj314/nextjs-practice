@@ -5,20 +5,23 @@ import showdown from 'showdown';
 import { getAuthToken } from '../../../../auth';
 import { BookReaderPageClient } from './BookReaderPageClient';
 
-async function getSummary(id: string) {
-  const md = await fetchAction(
-    api.document.getSummary,
+async function getSummaries(id: string) {
+  const summaries = await fetchAction(
+    api.document.getSummaries,
     { id },
     { token: await getAuthToken() }
   );
   const converter = new showdown.Converter();
-  return converter.makeHtml(md);
+  return summaries.map((s) => ({
+    ...s,
+    content: converter.makeHtml(s.content),
+  }));
 }
 
 type Props = { params: { id: string } };
 
 export default async function BookReaderPage({ params }: Props) {
   const { id: documentId } = params;
-  const summary = await getSummary(documentId as string);
-  return <BookReaderPageClient summary={summary} />;
+  const summaries = await getSummaries(documentId as string);
+  return <BookReaderPageClient summaries={summaries} />;
 }

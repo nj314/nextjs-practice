@@ -1,7 +1,8 @@
 import { v } from 'convex/values';
 import { api } from './_generated/api';
-import { Id } from './_generated/dataModel';
+import { Doc, Id } from './_generated/dataModel';
 import { QueryCtx, action, mutation, query } from './_generated/server';
+import { zoomLevelSchema } from './schema';
 import { ensureIdentity } from './utils';
 
 export const create = mutation({
@@ -22,6 +23,7 @@ export const create = mutation({
       sourceStorageId: args.sourceStorageId,
       coverUrl: args.coverUrl,
       lastAccessTime: Number(new Date()),
+      summaries: [],
     });
     return docId;
   },
@@ -55,7 +57,6 @@ export const update = mutation({
     id: v.id('documents'),
     title: v.optional(v.string()),
     sourceStorageId: v.optional(v.id('_storage')),
-    summaryStorageId: v.optional(v.id('_storage')),
   },
   handler: async (ctx, args) => {
     const { id: userId } = await ensureIdentity(ctx);
@@ -73,13 +74,28 @@ export const update = mutation({
     if (args.sourceStorageId) {
       doc.sourceStorageId = args.sourceStorageId;
     }
-    if (args.summaryStorageId) {
-      doc.summaryStorageId = args.summaryStorageId;
-    }
 
     console.log('Writing document to db:', doc);
 
     await ctx.db.patch(args.id, doc);
+  },
+});
+
+export const upsertSummary = mutation({
+  args: {
+    id: v.id('documents'),
+    zoomLevel: zoomLevelSchema,
+    storageId: v.id('_storage'),
+  },
+  handler: async (ctx, args) => {
+    const { id: userId } = await ensureIdentity(ctx);
+    const doc = await getDocument(ctx, { id: args.id, userId });
+    await ctx.db.patch(args.id, {
+      summaries: [
+        ...doc.summaries.filter((s) => s.zoomLevel !== args.zoomLevel),
+        { zoomLevel: args.zoomLevel, storageId: args.storageId },
+      ],
+    });
   },
 });
 
@@ -101,16 +117,31 @@ export const getSourceUrl = query({
   },
 });
 
-export const getSummary = action({
+export const getSummaries = action({
   args: { id: v.string() },
-  handler: async (ctx, args): Promise<string> => {
-    const { summaryStorageId } = await ctx.runQuery(api.document.get, {
-      id: args.id,
-    });
-    if (!summaryStorageId) throw new Error('No summary available');
-    const url = await ctx.storage.getUrl(summaryStorageId);
-    if (!url) throw new Error('Failed to create URL');
-    const res = await fetch(url);
-    return await res.text();
+  handler: async (ctx, args): Promise<Array<HydratedSummary>> => {
+    const { summaries, sourceStorageId } = await ctx.runQuery(
+      api.document.get,
+      { id: args.id }
+    );
+    summaries.unshift({ zoomLevel: 'original', storageId: sourceStorageId });
+    const hydratedSummaries = (
+      await Promise.all(
+        summaries.map(async (s) => {
+          const url = (await ctx.storage.getUrl(s.storageId)) || '';
+          const content = url ? await (await fetch(url)).text() : '';
+          return { ...s, content };
+        })
+      )
+    ).filter((s) => s.content);
+
+    return hydratedSummaries;
   },
 });
+
+type Summary = Doc<'documents'>['summaries'][number];
+export type HydratedSummary = Summary & {
+  content: string;
+};
+
+export type ZoomLevel = Summary['zoomLevel'];

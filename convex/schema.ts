@@ -3,6 +3,13 @@ import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import { quizStatusValidator } from './utils';
 
+export const zoomLevelSchema = v.union(
+  v.literal('original'),
+  v.literal('chapter'),
+  v.literal('multiParagraph'),
+  v.literal('paragraph')
+);
+
 export default defineSchema({
   migrations: migrationsTable,
   boards: defineTable({
@@ -51,9 +58,14 @@ export default defineSchema({
   documents: defineTable({
     title: v.string(),
     ownerId: v.string(),
-    sourceStorageId: v.optional(v.id('_storage')),
-    summaryStorageId: v.optional(v.id('_storage')),
+    sourceStorageId: v.id('_storage'),
     coverUrl: v.optional(v.string()),
     lastAccessTime: v.number(),
+    summaries: v.array(
+      v.object({
+        zoomLevel: zoomLevelSchema,
+        storageId: v.id('_storage'),
+      })
+    ),
   }).index('by_owner', ['ownerId']),
 });

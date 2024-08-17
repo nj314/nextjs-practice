@@ -1,28 +1,18 @@
 'use client';
-import { UserButton } from '@clerk/nextjs';
 import { Button, Slider } from '@shared/components/ui';
-import { ArrowLeft, ZoomIn, ZoomOut } from 'lucide-react';
-import Link from 'next/link';
+import { HydratedSummary } from 'convex/document';
+import { ZoomIn, ZoomOut } from 'lucide-react';
 import { useState } from 'react';
-import { Book } from '../../../constants';
-import { mockBook } from './mocks';
 
-export function BookReaderPageClient({ summary }: { summary: string }) {
-  'use client';
-  const book: Book = { ...mockBook };
-  const [_, summaryContent] = book.contents;
-  if (summary) summaryContent.value = summary;
+type Props = { summaries: HydratedSummary[] };
+export function BookReaderPageClient({ summaries }: Props) {
   const [zoomLevel, setZoomLevel] = useState(0);
   const MAX_ZOOM = 0;
-  const MIN_ZOOM = -1 * (book.contents.length - 1);
+  const MIN_ZOOM = -1 * (summaries.length - 1);
 
   return (
-    <div className="dark:bg-zinc-950 w-full h-full">
-      <header className="flex flex-row justify-between drop-shadow-3 dark:bg-zinc-900 sticky pr-3 py-1">
-        <Link href="/reader" className="flex flex-row items-center p-2 gap-2">
-          <ArrowLeft />
-          Back
-        </Link>
+    <div className=" w-full h-full">
+      <header className="flex flex-row justify-center drop-shadow-3 sticky pr-3 py-1">
         <div className="flex flex-row min-w-[40%] items-center gap-3">
           <Button
             disabled={zoomLevel === MIN_ZOOM}
@@ -46,13 +36,12 @@ export function BookReaderPageClient({ summary }: { summary: string }) {
             <ZoomIn />
           </Button>
         </div>
-        <UserButton />
       </header>
       <main>
         <div
-          className="mx-auto px-5 py-3 w-full max-w-[400px]"
+          className="mx-auto px-5 py-3 w-full max-w-[600px] [&_p]:my-4"
           dangerouslySetInnerHTML={{
-            __html: book.contents[zoomLevel * -1].value,
+            __html: summaries[zoomLevel * -1].content,
           }}
         />
       </main>

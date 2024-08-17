@@ -13,7 +13,7 @@ import { FormProvider } from 'react-hook-form';
 import { DocumentControl } from './DocumentControl';
 import { TitleFormItem } from './TitleFormItem';
 import { ACCEPTED_FILE_TYPES, useDocumentForm } from './form';
-import { dispatchDocumentSummaryJob, getContentType } from './server-actions';
+import { dispatchDocumentSummaryJobs, getContentType } from './server-actions';
 
 export default function AddDocument() {
   // 1. Define your form.
@@ -39,7 +39,7 @@ export default function AddDocument() {
       title,
       sourceStorageId: responseBody.storageId,
     });
-    await dispatchDocumentSummaryJob({
+    await dispatchDocumentSummaryJobs({
       sourceDocId,
     });
   });

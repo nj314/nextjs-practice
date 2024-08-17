@@ -12,18 +12,14 @@ export async function getContentType(fileNameOrExtension: string) {
 }
 
 /**
- * React Server Action to dispatch a document summary job.
- * @param filePath
- * @returns void
+ * React Server Action to dispatch document summary jobs.
  */
-export async function dispatchDocumentSummaryJob(args: {
-  // filePath = `${process.cwd()}/src/app/reader/assets/Art of War (Sun Tzu) Chapters 1-4.txt`
-  // filePath = `${process.cwd()}/src/app/reader/assets/abramov.txt`
+export async function dispatchDocumentSummaryJobs(args: {
   sourceDocId: Id<'documents'>;
 }) {
   const { sourceDocId } = args;
   const user = await currentUser();
-  console.log('the current user is ', user);
+  // console.log('the current user is ', user);
   if (!user) {
     throw new Error('Not authenticated, aborting');
   }
@@ -35,38 +31,36 @@ export async function dispatchDocumentSummaryJob(args: {
     { token }
   );
   if (!sourceUrl) throw new Error('Could not get source file URL.');
-  console.log('Summary job: source file url is', sourceUrl);
-  const summaryPromise = summarize({ sourceDocId, sourceUrl }); // do not await
-  console.log('Summary job dispatched for source file:', sourceUrl);
 
-  const summaryContent = await summaryPromise;
-  console.log('Summary job COMPLETE for source file:', sourceUrl);
+  const summaryPromise = summarize({
+    sourceDocId,
+    sourceUrl,
+  }); // do not await
 
-  // const summaryFilePath = `./summary-${sourceStorageId}.md`;
-  // const localFile = await fs.open(summaryFilePath);
-  const uploadUrl = await fetchMutation(
-    api.file.generateUploadUrl,
-    {},
-    { token }
-  );
-  console.log('upload url is', uploadUrl);
-  const response = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': mime.contentType('.md') || 'application/octet-stream',
-    },
-    body: summaryContent,
-  });
+  const summaries = await summaryPromise;
+  for (const { zoomLevel, summary } of summaries) {
+    const uploadUrl = await fetchMutation(
+      api.file.generateUploadUrl,
+      {},
+      { token }
+    );
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': mime.contentType('.md') || 'application/octet-stream',
+      },
+      body: summary,
+    });
 
-  const { storageId: summaryStorageId } = await response.json();
-  console.log('Uploaded summary document storage id:', summaryStorageId);
-  console.log('Updating document with id', sourceDocId);
-  await fetchMutation(
-    api.document.update,
-    {
-      id: sourceDocId,
-      summaryStorageId,
-    },
-    { token }
-  );
+    const { storageId } = await response.json();
+    await fetchMutation(
+      api.document.upsertSummary,
+      {
+        id: sourceDocId,
+        zoomLevel,
+        storageId,
+      },
+      { token }
+    );
+  }
 }

@@ -51,14 +51,16 @@ export default function MyLibraryPage() {
                 <CardContent>
                   <CardTitle>
                     {book.title}{' '}
-                    {book.summaryStorageId && (
+                    {book.summaries.length && (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <CheckCircle name="check mark" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>AI summaries available</p>
+                            <p>
+                              {book.summaries.length} AI summaries available
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
